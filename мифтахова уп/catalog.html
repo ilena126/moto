@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Motorcycle Inventory</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#f3c950", secondary: "#1e293b" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Stalinist+One&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+      :where([class^="ri-"])::before {
+        content: "\f3c2";
+      }
+      body {
+        background-image: url(./img/bg2.png);
+        background-repeat: no-repeat;
+        background-size: cover;
+        font-family: "Inter", sans-serif;
+      }
+      .motorcycle-card {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      }
+      .motorcycle-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+      .cart-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        width: 320px;
+        z-index: 50;
+      }
+      .cart-container:hover .cart-dropdown {
+        display: block;
+      }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+
+      .logo {
+        font-family: "Stalinist One", sans-serif;
+      }
+      nav a {
+        transition: color 0.3s ease;
+      }
+      nav a:hover {
+        color: #d3af37;
+      }
+      .language-selector img {
+        vertical-align: middle;
+      }
+      .language-selector span {
+        margin-left: 5px;
+      }
+      #theme-toggle {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+      <header class="flex justify-between items-center mb-6">
+        <div
+          class="container mx-auto px-4 py-4 flex justify-between items-center"
+        >
+          <!-- Логотип -->
+          <div class="logo text-xl font-bold text-primary">MotoRush</div>
+
+          <!-- Меню -->
+          <nav class="flex space-x-6">
+            <a href="index.html" class="text-gray-800 hover:text-primary">Главная</a>
+            <a href="catalog.html" class="text-gray-800 hover:text-primary">Каталог</a>
+            <a href="#" class="text-gray-800 hover:text-primary">Наш блог</a>
+            <a href="#" class="text-gray-800 hover:text-primary">Контакты</a>
+          </nav>
+
+          <!-- Язык и тема -->
+          <div class="flex items-center space-x-4">
+            <div class="language-selector flex items-center space-x-2">
+              <img src="./img/flag.png" alt="Flag" width="20" />
+              <span>ENG</span>
+              <img
+                src="./img/dropdown-arrow.svg"
+                alt="Dropdown Arrow"
+                width="10"
+              />
+            </div>
+            <button id="theme-toggle" class="text-gray-800 hover:text-primary">
+              🌙
+            </button>
+          </div>
+        </div>
+        <div class="cart-container relative">
+          <button
+            class="flex items-center space-x-2 bg-primary text-gray-800 px-4 py-2 rounded-button"
+          >
+            <div class="w-6 h-6 flex items-center justify-center">
+              <i class="ri-shopping-cart-2-line"></i>
+            </div>
+            <span>Cart</span>
+            <span
+              id="cart-count"
+              class="bg-gray-800 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+              >0</span
+            >
+          </button>
+          <div
+            class="cart-dropdown bg-white rounded shadow-lg p-4 border border-gray-200"
+          >
+            <h3 class="font-bold text-gray-800 mb-2">Your Cart</h3>
+            <div id="cart-items" class="max-h-64 overflow-y-auto mb-4">
+              <p class="text-gray-500 text-sm italic">Your cart is empty</p>
+            </div>
+            <div class="border-t pt-2">
+              <div class="flex justify-between mb-2">
+                <span class="font-medium">Total:</span>
+                <span id="cart-total" class="font-bold text-primary">$0</span>
+              </div>
+              <button
+                class="w-full bg-primary text-gray-800 py-2 rounded-button font-medium !rounded-button whitespace-nowrap"
+              >
+                Checkout
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="bg-gray-800 rounded-lg p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="relative">
+            <button
+              id="conditionsDropdown"
+              class="flex justify-between items-center w-full bg-white rounded p-2 text-gray-700 pr-8"
+            >
+              <span id="conditionsText">All Conditions</span>
+              <div
+                class="w-5 h-5 flex items-center justify-center absolute right-2"
+              >
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </button>
+            <div
+              id="conditionsMenu"
+              class="hidden absolute z-10 w-full mt-1 bg-white rounded shadow-lg"
+            >
+              <ul class="py-1">
+                <li
+                  class="condition-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="All Conditions"
+                >
+                  All Conditions
+                </li>
+                <li
+                  class="condition-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="New"
+                >
+                  New
+                </li>
+                <li
+                  class="condition-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Used"
+                >
+                  Used
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="relative">
+            <button
+              id="categoriesDropdown"
+              class="flex justify-between items-center w-full bg-white rounded p-2 text-gray-700 pr-8"
+            >
+              <span id="categoriesText">All Categories</span>
+              <div
+                class="w-5 h-5 flex items-center justify-center absolute right-2"
+              >
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </button>
+            <div
+              id="categoriesMenu"
+              class="hidden absolute z-10 w-full mt-1 bg-white rounded shadow-lg"
+            >
+              <ul class="py-1">
+                <li
+                  class="category-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="All Categories"
+                >
+                  All Categories
+                </li>
+                <li
+                  class="category-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Sport"
+                >
+                  Sport
+                </li>
+                <li
+                  class="category-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Cruiser"
+                >
+                  Cruiser
+                </li>
+                <li
+                  class="category-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Touring"
+                >
+                  Touring
+                </li>
+                <li
+                  class="category-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Adventure"
+                >
+                  Adventure
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="relative">
+            <button
+              id="brandsDropdown"
+              class="flex justify-between items-center w-full bg-white rounded p-2 text-gray-700 pr-8"
+            >
+              <span id="brandsText">All Brands</span>
+              <div
+                class="w-5 h-5 flex items-center justify-center absolute right-2"
+              >
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </button>
+            <div
+              id="brandsMenu"
+              class="hidden absolute z-10 w-full mt-1 bg-white rounded shadow-lg"
+            >
+              <ul class="py-1">
+                <li
+                  class="brand-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="All Brands"
+                >
+                  All Brands
+                </li>
+                <li
+                  class="brand-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Suzuki"
+                >
+                  Suzuki
+                </li>
+                <li
+                  class="brand-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Triumph"
+                >
+                  Triumph
+                </li>
+                <li
+                  class="brand-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Kawasaki"
+                >
+                  Kawasaki
+                </li>
+                <li
+                  class="brand-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Ducati"
+                >
+                  Ducati
+                </li>
+                <li
+                  class="brand-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Yamaha"
+                >
+                  Yamaha
+                </li>
+                <li
+                  class="brand-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Harley Davidson"
+                >
+                  Harley Davidson
+                </li>
+                <li
+                  class="brand-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Honda"
+                >
+                  Honda
+                </li>
+                <li
+                  class="brand-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="BMW"
+                >
+                  BMW
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Select model (exactly)"
+              class="w-full bg-white rounded p-2 text-gray-700 border-none"
+              id="modelSearch"
+            />
+          </div>
+        </div>
+
+        <div class="flex justify-end mt-4 gap-2">
+          <button
+            class="bg-primary text-gray-800 px-6 py-2 rounded-button font-medium !rounded-button whitespace-nowrap"
+          >
+            Search
+          </button>
+          <button
+            class="bg-gray-200 text-gray-800 px-6 py-2 rounded-button font-medium !rounded-button whitespace-nowrap"
+          >
+            Clear Filter
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center mb-4">
+        <p class="text-gray-600">Displaying 1 - 12 of 36</p>
+
+        <div class="flex gap-4">
+          <div class="relative">
+            <button
+              id="sortDropdown"
+              class="flex justify-between items-center bg-white rounded p-2 text-gray-700 pr-8 border border-gray-200"
+            >
+              <span id="sortText">Most Relevant</span>
+              <div
+                class="w-5 h-5 flex items-center justify-center absolute right-2"
+              >
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </button>
+            <div
+              id="sortMenu"
+              class="hidden absolute right-0 z-10 w-48 mt-1 bg-white rounded shadow-lg"
+            >
+              <ul class="py-1">
+                <li
+                  class="sort-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Most Relevant"
+                >
+                  Most Relevant
+                </li>
+                <li
+                  class="sort-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Price: Low to High"
+                >
+                  Price: Low to High
+                </li>
+                <li
+                  class="sort-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Price: High to Low"
+                >
+                  Price: High to Low
+                </li>
+                <li
+                  class="sort-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Newest First"
+                >
+                  Newest First
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="relative">
+            <button
+              id="pageDropdown"
+              class="flex justify-between items-center bg-white rounded p-2 text-gray-700 pr-8 border border-gray-200"
+            >
+              <span id="pageText">Page 1</span>
+              <div
+                class="w-5 h-5 flex items-center justify-center absolute right-2"
+              >
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </button>
+            <div
+              id="pageMenu"
+              class="hidden absolute right-0 z-10 w-32 mt-1 bg-white rounded shadow-lg"
+            >
+              <ul class="py-1">
+                <li
+                  class="page-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Page 1"
+                >
+                  Page 1
+                </li>
+                <li
+                  class="page-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Page 2"
+                >
+                  Page 2
+                </li>
+                <li
+                  class="page-option px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                  data-value="Page 3"
+                >
+                  Page 3
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Motorcycle 1 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Suzuki%20GSX-R1000%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=1&orientation=landscape"
+              alt="Suzuki GSX-R1000"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-yellow-500 text-xs text-gray-800 px-2 py-1 rounded"
+              >Used</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">
+              Suzuki GSX-R1000 (2004)
+            </h3>
+            <p class="text-primary font-bold text-xl mb-3">550 126 руб.</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 3</span>
+              <span>Color(s): Yellow/White</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+                Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="1"
+                data-name="Suzuki GSX-R1000 (2004)"
+                data-price="550126"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 2 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Triumph%20Street%20Triple%20R%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=2&orientation=landscape"
+              alt="Triumph Street Triple R"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-blue-500 text-xs text-white px-2 py-1 rounded"
+              >New</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">
+              Triumph Street Triple R (2020)
+            </h3>
+            <p class="text-primary font-bold text-xl mb-3">996 670 руб.</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 2</span>
+              <span>Color(s): Black</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="2"
+                data-name="Triumph Street Triple R (2020)"
+                data-price="12499"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 3 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Kawasaki%20Versys%20650%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=3&orientation=landscape"
+              alt="Kawasaki Versys 650"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-blue-500 text-xs text-white px-2 py-1 rounded"
+              >New</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">
+              Kawasaki Versys 650 (2020)
+            </h3>
+            <p class="text-primary font-bold text-xl mb-3">661 762 руб.</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 5</span>
+              <span>Color(s): Green</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="3"
+                data-name="Kawasaki Versys 650 (2020)"
+                data-price="661762"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 4 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Ducati%201199%20Panigale%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=4&orientation=landscape"
+              alt="Ducati 1199 Panigale"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-yellow-500 text-xs text-gray-800 px-2 py-1 rounded"
+              >Used</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">
+              Ducati 1199 Panigale (2015)
+            </h3>
+            <p class="text-primary font-bold text-xl mb-3">996 670 руб.</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 1</span>
+              <span>Color(s): Red</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="4"
+                data-name="Ducati 1199 Panigale (2015)"
+                data-price="996670"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 5 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Yamaha%20MT-09%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=5&orientation=landscape"
+              alt="Yamaha MT-09"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-yellow-500 text-xs text-gray-800 px-2 py-1 rounded"
+              >Used</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">Yamaha MT-09 (2020)</h3>
+            <p class="text-primary font-bold text-xl mb-3">677 710</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 2</span>
+              <span>Color(s): Metallic Grey</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="5"
+                data-name="Yamaha MT-09 (2020)"
+                data-price="677710"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 6 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Harley%20Davidson%20Forty-Eight%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=6&orientation=landscape"
+              alt="Harley Davidson Forty-Eight"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-blue-500 text-xs text-white px-2 py-1 rounded"
+              >New</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">
+              Harley Davidson Forty-Eight (2021)
+            </h3>
+            <p class="text-primary font-bold text-xl mb-3">916 930</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 3</span>
+              <span>Color(s): Vivid Black</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="6"
+                data-name="Harley Davidson Forty-Eight (2021)"
+                data-price="916930"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 7 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Honda%20CB650%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=7&orientation=landscape"
+              alt="Honda CB650"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-yellow-500 text-xs text-gray-800 px-2 py-1 rounded"
+              >Used</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">Honda CB650 (2019)</h3>
+            <p class="text-primary font-bold text-xl mb-3">653 788</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 1</span>
+              <span>Color(s): Chrome Red</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="7"
+                data-name="Honda CB650 (2019)"
+                data-price="653788"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 8 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=BMW%20S1000RR%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=8&orientation=landscape"
+              alt="BMW S1000RR"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-yellow-500 text-xs text-gray-800 px-2 py-1 rounded"
+              >Used</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">BMW S1000RR (2017)</h3>
+            <p class="text-primary font-bold text-xl mb-3">1 036 540 руб.</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 1</span>
+              <span>Color(s): White</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="8"
+                data-name="BMW S1000RR (2017)"
+                data-price="1036540"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 9 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Triumph%20Bonneville%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=9&orientation=landscape"
+              alt="Triumph Bonneville"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-blue-500 text-xs text-white px-2 py-1 rounded"
+              >New</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">
+              Triumph Bonneville (2021)
+            </h3>
+            <p class="text-primary font-bold text-xl mb-3">980 802</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 4</span>
+              <span>Color(s): Cobblestone Blue</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="9"
+                data-name="Triumph Bonneville (2021)"
+                data-price="980802"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 10 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Yamaha%20R7%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=10&orientation=landscape"
+              alt="Yamaha R7"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-blue-500 text-xs text-white px-2 py-1 rounded"
+              >New</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">Yamaha R7 (2023)</h3>
+            <p class="text-primary font-bold text-xl mb-3">701 632 руб.</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 3</span>
+              <span>Color(s): Team Yamaha Blue</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="10"
+                data-name="Yamaha R7 (2023)"
+                data-price="701632"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 11 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Kawasaki%20Ninja%20400%20ABS%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=11&orientation=landscape"
+              alt="Kawasaki Ninja 400 ABS"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-blue-500 text-xs text-white px-2 py-1 rounded"
+              >New</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">
+              Kawasaki Ninja 400 ABS (2022)
+            </h3>
+            <p class="text-primary font-bold text-xl mb-3">446 464</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 6</span>
+              <span>Color(s): Passion Red</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="11"
+                data-name="Kawasaki Ninja 400 ABS (2022)"
+                data-price="446464"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- Motorcycle 12 -->
+        <div class="motorcycle-card bg-gray-800 rounded-lg overflow-hidden">
+          <div class="relative">
+            <img
+              src="https://readdy.ai/api/search-image?query=Harley%20Davidson%20Street%20750%20motorcycle%2C%20detailed%20professional%20product%20photo%2C%20clean%20studio%20background%2C%20high%20resolution%2C%20sharp%20focus%2C%20showing%20the%20entire%20motorcycle%20from%20the%20side&width=400&height=300&seq=12&orientation=landscape"
+              alt="Harley Davidson Street 750"
+              class="w-full h-48 object-cover object-top"
+            />
+            <span
+              class="absolute top-2 right-2 bg-blue-500 text-xs text-white px-2 py-1 rounded"
+              >New</span
+            >
+          </div>
+          <div class="p-4">
+            <h3 class="text-white font-semibold mb-1">
+              Harley Davidson Street 750 (2020)
+            </h3>
+            <p class="text-primary font-bold text-xl mb-3">574 048</p>
+            <div class="flex justify-between text-sm text-gray-400 mb-3">
+              <span>Stock: 2</span>
+              <span>Color(s): Blaze Red</span>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                class="flex-1 bg-gray-700 text-white py-2 rounded-button hover:bg-gray-600 !rounded-button whitespace-nowrap"
+              >
+              Подробнее
+              </button>
+              <button
+                class="add-to-cart bg-primary text-gray-800 py-2 px-3 rounded-button !rounded-button whitespace-nowrap"
+                data-id="12"
+                data-name="Harley Davidson Street 750 (2020)"
+                data-price="574048"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-shopping-cart-add-line"></i>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center items-center space-x-2 mt-8">
+        <button
+          class="bg-primary text-gray-800 w-8 h-8 rounded-full flex items-center justify-center font-medium"
+        >
+          1
+        </button>
+        <button
+          class="bg-gray-200 text-gray-800 w-8 h-8 rounded-full flex items-center justify-center font-medium hover:bg-gray-300"
+        >
+          2
+        </button>
+        <button
+          class="bg-gray-200 text-gray-800 w-8 h-8 rounded-full flex items-center justify-center font-medium hover:bg-gray-300"
+        >
+          3
+        </button>
+        <button
+          class="bg-gray-200 text-gray-800 px-4 py-1 rounded flex items-center justify-center font-medium hover:bg-gray-300"
+        >
+          Next
+          <div class="w-4 h-4 flex items-center justify-center ml-1">
+            <i class="ri-arrow-right-s-line"></i>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <script id="dropdownToggle">
+      document.addEventListener("DOMContentLoaded", function () {
+        // Conditions dropdown
+        const conditionsDropdown =
+          document.getElementById("conditionsDropdown");
+        const conditionsMenu = document.getElementById("conditionsMenu");
+        const conditionsText = document.getElementById("conditionsText");
+        const conditionOptions = document.querySelectorAll(".condition-option");
+        conditionsDropdown.addEventListener("click", function () {
+          conditionsMenu.classList.toggle("hidden");
+        });
+
+        conditionOptions.forEach((option) => {
+          option.addEventListener("click", function () {
+            conditionsText.textContent = this.dataset.value;
+            conditionsMenu.classList.add("hidden");
+          });
+        });
+
+        // Categories dropdown
+        const categoriesDropdown =
+          document.getElementById("categoriesDropdown");
+        const categoriesMenu = document.getElementById("categoriesMenu");
+        const categoriesText = document.getElementById("categoriesText");
+        const categoryOptions = document.querySelectorAll(".category-option");
+        categoriesDropdown.addEventListener("click", function () {
+          categoriesMenu.classList.toggle("hidden");
+        });
+
+        categoryOptions.forEach((option) => {
+          option.addEventListener("click", function () {
+            categoriesText.textContent = this.dataset.value;
+            categoriesMenu.classList.add("hidden");
+          });
+        });
+
+        // Brands dropdown
+        const brandsDropdown = document.getElementById("brandsDropdown");
+        const brandsMenu = document.getElementById("brandsMenu");
+        const brandsText = document.getElementById("brandsText");
+        const brandOptions = document.querySelectorAll(".brand-option");
+
+        brandsDropdown.addEventListener("click", function () {
+          brandsMenu.classList.toggle("hidden");
+        });
+
+        brandOptions.forEach((option) => {
+          option.addEventListener("click", function () {
+            brandsText.textContent = this.dataset.value;
+            brandsMenu.classList.add("hidden");
+          });
+        });
+
+        // Sort dropdown
+        const sortDropdown = document.getElementById("sortDropdown");
+        const sortMenu = document.getElementById("sortMenu");
+        const sortText = document.getElementById("sortText");
+        const sortOptions = document.querySelectorAll(".sort-option");
+        sortDropdown.addEventListener("click", function () {
+          sortMenu.classList.toggle("hidden");
+        });
+        sortOptions.forEach((option) => {
+          option.addEventListener("click", function () {
+            sortText.textContent = this.dataset.value;
+            sortMenu.classList.add("hidden");
+          });
+        });
+
+        // Page dropdown
+        const pageDropdown = document.getElementById("pageDropdown");
+        const pageMenu = document.getElementById("pageMenu");
+        const pageText = document.getElementById("pageText");
+        const pageOptions = document.querySelectorAll(".page-option");
+
+        pageDropdown.addEventListener("click", function () {
+          pageMenu.classList.toggle("hidden");
+        });
+
+        pageOptions.forEach((option) => {
+          option.addEventListener("click", function () {
+            pageText.textContent = this.dataset.value;
+            pageMenu.classList.add("hidden");
+          });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener("click", function (event) {
+          if (!conditionsDropdown.contains(event.target)) {
+            conditionsMenu.classList.add("hidden");
+          }
+          if (!categoriesDropdown.contains(event.target)) {
+            categoriesMenu.classList.add("hidden");
+          }
+          if (!brandsDropdown.contains(event.target)) {
+            brandsMenu.classList.add("hidden");
+          }
+          if (!sortDropdown.contains(event.target)) {
+            sortMenu.classList.add("hidden");
+          }
+          if (!pageDropdown.contains(event.target)) {
+            pageMenu.classList.add("hidden");
+          }
+        });
+      });
+    </script>
+
+    <script id="cartFunctionality">
+      document.addEventListener("DOMContentLoaded", function () {
+        const cart = [];
+        const cartCount = document.getElementById("cart-count");
+        const cartItems = document.getElementById("cart-items");
+        const cartTotal = document.getElementById("cart-total");
+        const addToCartButtons = document.querySelectorAll(".add-to-cart");
+        function updateCartDisplay() {
+          cartCount.textContent = cart.length;
+
+          if (cart.length === 0) {
+            cartItems.innerHTML =
+              '<p class="text-gray-500 text-sm italic">Your cart is empty</p>';
+            cartTotal.textContent = "$0";
+            return;
+          }
+
+          let total = 0;
+          cartItems.innerHTML = "";
+
+          cart.forEach((item, index) => {
+            total += item.price;
+
+            const itemElement = document.createElement("div");
+            itemElement.className =
+              "flex justify-between items-center py-2 border-b";
+            itemElement.innerHTML = `
+                              <div class="flex-1">
+                                  <p class="text-sm font-medium">${
+                                    item.name
+                                  }</p>
+                                  <p class="text-xs text-primary">$${item.price.toLocaleString()}</p>
+                              </div>
+                              <button class="remove-item text-gray-400 hover:text-red-500" data-index="${index}">
+                                  <div class="w-5 h-5 flex items-center justify-center">
+                                      <i class="ri-delete-bin-line"></i>
+                                  </div>
+                              </button>
+                          `;
+            cartItems.appendChild(itemElement);
+          });
+
+          cartTotal.textContent = "$" + total.toLocaleString();
+
+          // Add event listeners to remove buttons
+          document.querySelectorAll(".remove-item").forEach((button) => {
+            button.addEventListener("click", function () {
+              const index = parseInt(this.dataset.index);
+              cart.splice(index, 1);
+              updateCartDisplay();
+            });
+          });
+        }
+
+        addToCartButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            const id = this.dataset.id;
+            const name = this.dataset.name;
+            const price = parseInt(this.dataset.price);
+
+            cart.push({
+              id,
+              name,
+              price,
+            });
+
+            updateCartDisplay();
+
+            // Show added to cart animation
+            this.classList.add("bg-green-500");
+            setTimeout(() => {
+              this.classList.remove("bg-green-500");
+              this.classList.add("bg-primary");
+            }, 500);
+          });
+        });
+
+        // Initialize cart display
+        updateCartDisplay();
+      });
+    </script>
+  </body>
+</html>

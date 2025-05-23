@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MotoRush - Главная</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Шапка -->
+    <header>
+      <div class="container">
+        <div class="logo">MotoRush</div>
+        <nav>
+          <ul>
+            <li><a href="index.html">Главная</a></li>
+            <li>
+              <a href="catalog.html" class="dropdown">Каталог</a>
+            </li>
+            <li><a href="#">Наш блог</a></li>
+            <li><a href="#">Контакты</a></li>
+            <li>
+              <button class="login-btn"><a href="login.html">Вход</a></button>
+            </li>
+          </ul>
+        </nav>
+        <button id="theme-toggle">🌙</button>
+        <!-- Кнопка переключения темы -->
+      </div>
+    </header>
+
+    <!-- Главный раздел -->
+    <section class="hero-section">
+      <div class="video-background">
+        <video autoplay loop muted playsinline>
+          <source src="./img/bg.mp4" type="video/mp4" />
+          Ваш браузер не поддерживает тег video.
+        </video>
+      </div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="text-container">
+            <h1>
+              Найдите здесь <span class="text">мотоцикл</span> своей
+              <span class="text">мечты!</span>
+            </h1>
+            <p>
+              У нас более 100 коллекций новых и подержанных мотоциклов от таких
+              известных производителей, как Honda, Kawasaki, Yamaha, Ducati и
+              т.д. Мы предлагаем вам качественный товар по доступной цене и
+              отличного качества, который вы только сможете получить.
+            </p>
+            <button class="find-btn"><a href="catalog.html">Найти</a></button>
+            <div class="arrow-contant">
+              <a href="#banner"><img src="./img/arrow2.svg" alt="" /></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Главный баннер -->
+    <section class="banner" id="banner">
+      <div class="container">
+        <div class="banner-content">
+          <h2>ПРИГОТОВЬТЕСЬ К СВОЕЙ<br />ЛЕТНЕЙ ПОЕЗДКЕ</h2>
+          <p class="banner-p">Сэкономьте себе до 20% на покупке этим летом</p>
+          <small>Действует до 31 августа 2025 года</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- Почему мы? -->
+    <section class="why-us">
+      <div class="container">
+        <div class="image-container">
+          <img src="./img/moto1.png" alt="Motorcycle Road" />
+        </div>
+        <div class="text-container">
+          <h3>Почему мы?</h3>
+          <p class="text-container-p">
+            С 2010 года MotoRush продает сотни мотоциклов, которые отлично
+            подходят для дорог, по разумной цене. У нас есть все - от двигателя
+            малого объема до двигателя большего объема. Хотите насладиться
+            закатом на дороге или вы просто любитель скорости, которому нравится
+            соревноваться со своими друзьями на гоночной трассе? Вы найдете
+            мотоцикл, который вам подходит.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Футер -->
+    <footer>
+      <div class="footer-container">
+        <div class="footer-column">
+          <div class="logo">MotoRush</div>
+          <p>Республика Татарстан<br />г.Альметьевск, ул.Мира д.10</p>
+          <p>(343)-7509-2453</p>
+        </div>
+        <div class="footer-column">
+          <h3>Меню</h3>
+          <ul>
+            <li><a href="index.html">Главная</a></li>
+            <li><a href="#">Каталог</a></li>
+            <li><a href="#">Наш блог</a></li>
+            <li><a href="#">Контакты</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3>ЧАСЫ РАБОТЫ МАГАЗИНА</h3>
+          <p>Будни: 8 АМ - 3 PM</p>
+          <p>Суббота: 8 AM - 2 PM</p>
+          <p>Воскресенье/Национальные праздники: Выходной</p>
+        </div>
+      </div>
+
+      <!-- Социальные сети -->
+      <div class="social-links">
+        <a href="#"><img src="./img/github.png" alt="GitHub" /></a>
+        <a href="#"><img src="./img/vk.png" alt="VK" /></a>
+        <a href="#"><img src="./img/linkedin.png" alt="LinkedIn" /></a>
+        <a href="#"><img src="./img/whatsapp.png" alt="WhatsApp" /></a>
+      </div>
+
+      <!-- Копирайт -->
+      <div class="copyright">
+        <p>©2025 MotoRush.com. Все права защищены</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
